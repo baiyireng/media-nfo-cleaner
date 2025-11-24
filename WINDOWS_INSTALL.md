@@ -1,6 +1,6 @@
 # Windows 安装指南 - 视频库清理工具
 
-## 方法一：使用PowerShell（推荐）
+## 方法一：本地安装（推荐）
 
 1. 右键点击开始菜单，选择"Windows PowerShell"
 2. 复制并运行以下命令：
@@ -18,7 +18,7 @@ $wc.DownloadFile('https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/
 
 3. 按照提示完成安装
 
-## 方法二：使用命令提示符（CMD）
+## 方法二：远程安装（备选）
 
 1. 打开命令提示符（CMD）
 2. 复制并运行以下命令：

@@ -1,11 +1,23 @@
 # 快速安装指南
 
-## 远程一键安装
+## 本地安装（推荐）
 
-**Linux/macOS用户**:
+### Windows系统
+
+1. 下载项目文件：
+   - 访问 https://github.com/baiyireng/media-nfo-cleaner
+   - 点击 "Code" 按钮，选择 "Download ZIP"
+
+2. 解压到任意目录，如 `C:\tools\media-nfo-cleaner`
+
+3. 双击运行 `quick-start.bat` 启动工具
+
+### Linux/macOS用户**:
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.sh)"
 ```
+
+## 远程安装（备选）
 
 **Windows用户**:
 1. 打开命令提示符（CMD）
