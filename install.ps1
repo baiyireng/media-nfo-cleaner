@@ -156,8 +156,8 @@ Write-Host "项目地址: $GITHUB_URL" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "使用方法:" -ForegroundColor Yellow
 Write-Host "1. 便捷启动: 双击 $INSTALL_DIR\quick-start.bat" -ForegroundColor White
-Write-Host "2. 预览模式: $INSTALL_DIR\scripts\run_video_cleaner.bat `"D:\Video"` --dry-run" -ForegroundColor White
-Write-Host "3. 回收模式: $INSTALL_DIR\scripts\run_video_cleaner.bat `"D:\Video"` --recycle `"Recycle`"" -ForegroundColor White
+Write-Host "2. 预览模式: $INSTALL_DIR\scripts\run_video_cleaner.bat `"D:\\Video`" --dry-run" -ForegroundColor White
+Write-Host "3. 回收模式: $INSTALL_DIR\scripts\run_video_cleaner.bat `"D:\\Video`" --recycle `"Recycle`"" -ForegroundColor White
 Write-Host ""
 Write-Host "更多信息请查看: $INSTALL_DIR\docs\README_NAS_Setup.md" -ForegroundColor White
 Write-Host ""
