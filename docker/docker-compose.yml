@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  video-cleaner:
+    image: northsea4/dxp4800-video-cleaner:latest
+    container_name: dxp4800-video-cleaner
+    volumes:
+      # 挂载您的视频目录
+      - /volume1/Video:/data/video:ro
+      # 挂载回收目录（可选）
+      - /volume1/homes/admin/video_recycle:/data/recycle
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
+    command: ["/data/video", "--dry-run"]  # 默认预览模式
+    # 直接删除模式: command: ["/data/video"]
+    # 回收模式: command: ["/data/video", "--recycle", "/data/recycle"]
+
+  # 如果需要定期清理，可以添加以下服务
+  scheduler:
+    image: alpine:latest
+    container_name: video-cleaner-scheduler
+    depends_on:
+      - video-cleaner
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      sh -c "
+        echo '0 2 * * 0 docker run --rm -v /volume1/Video:/data/video:ro -v /volume1/homes/admin/video_recycle:/data/recycle northsea4/dxp4800-video-cleaner:latest /data/video --recycle /data/recycle' >> /etc/crontabs/root
+        && crond -f -l 2
+      "
+    restart: unless-stopped
