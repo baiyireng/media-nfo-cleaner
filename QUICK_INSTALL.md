@@ -2,9 +2,20 @@
 
 ## 远程一键安装
 
+**Linux/macOS用户**:
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/northsea4/mdcx-docker/main/install.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.sh)"
 ```
+
+**Windows用户**:
+1. 打开命令提示符（CMD）或PowerShell
+2. 复制并运行以下命令：
+```cmd
+powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat' -OutFile 'install.bat'; .\install.bat"
+```
+
+或者直接下载并运行 `install.bat` 文件:
+https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat
 
 ## Docker安装
 
