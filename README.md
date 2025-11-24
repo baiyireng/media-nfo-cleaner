@@ -18,6 +18,36 @@
 
 ## 快速开始
 
+### 一键Docker部署
+
+我们提供了一键Docker部署脚本，支持Windows和Linux/macOS系统，自动处理镜像拉取、容器运行等所有步骤。
+
+#### Windows系统
+
+```cmd
+# 添加执行权限（如果需要）
+# 右键点击CMD或PowerShell，选择"以管理员身份运行"
+
+# 便捷启动脚本
+scripts\\docker_deploy.bat "D:\\Video"
+
+# 回收模式
+scripts\\docker_deploy.bat "D:\\Video" "D:\\Recycle"
+```
+
+#### Linux/macOS系统
+
+```bash
+# 添加执行权限
+chmod +x scripts/docker_deploy.sh
+
+# 便捷启动脚本
+./scripts/docker_deploy.sh "/volume1/Video"
+
+# 回收模式
+./scripts/docker_deploy.sh "/volume1/Video" "/volume1/Recycle"
+```
+
 ### 远程一键安装（推荐）
 
 **Linux/macOS用户**:
@@ -58,35 +88,26 @@ chmod +x install/install_for_nas.sh
 ./install/install_for_nas.sh
 ```
 
-### Docker部署
+### 手动Docker方式
 
-#### 从源代码构建
+如果您更喜欢手动操作，也可以使用以下命令：
 
 ```bash
-# 克隆仓库
-git clone https://github.com/baiyireng/media-nfo-cleaner.git
-cd media-nfo-cleaner
+# 拉取镜像
+docker pull baiyiren/media-nfo-cleaner:latest
 
-# 构建Docker镜像
-docker build -t baiyiren/media-nfo-cleaner:latest -f docker/Dockerfile .
-
-# 运行容器（挂载视频目录）
+# 预览模式
 docker run -it --rm \
   -v /volume1/Video:/data/video \
-  -v /volume1/homes/admin/video_cleaner/recycle:/data/recycle \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run
+
+# 回收模式
+docker run -it --rm \
+  -v /volume1/Video:/data/video \
+  -v /volume1/homes/admin/recycle:/data/recycle \
   baiyiren/media-nfo-cleaner:latest \
   /data/video --recycle /data/recycle
-```
-
-#### 使用Docker Compose
-
-```bash
-# 克隆仓库
-git clone https://github.com/baiyireng/media-nfo-cleaner.git
-cd media-nfo-cleaner
-
-# 使用Docker Compose运行
-docker-compose run --rm media-nfo-cleaner /data/video --dry-run
 ```
 
 详细Docker使用指南请参考：[Docker部署指南](docs/DOCKER.md)

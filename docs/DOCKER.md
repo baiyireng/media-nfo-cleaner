@@ -2,6 +2,36 @@
 
 本指南说明如何使用Docker部署视频库清理工具。
 
+## 一键Docker部署
+
+我们提供了一键Docker部署脚本，简化了部署流程。
+
+### Windows系统
+
+```cmd
+# 添加执行权限（如果需要）
+# 右键点击CMD或PowerShell，选择"以管理员身份运行"
+
+# 便捷启动脚本
+scripts\\docker_deploy.bat "D:\\Video"
+
+# 回收模式
+scripts\\docker_deploy.bat "D:\\Video" "D:\\Recycle"
+```
+
+### Linux/macOS系统
+
+```bash
+# 添加执行权限
+chmod +x scripts/docker_deploy.sh
+
+# 便捷启动脚本
+./scripts/docker_deploy.sh "/volume1/Video"
+
+# 回收模式
+./scripts/docker_deploy.sh "/volume1/Video" "/volume1/Recycle"
+```
+
 ## 构建Docker镜像
 
 ### 从源代码构建

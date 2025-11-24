@@ -67,17 +67,49 @@ docker run -it --rm \
   /data/video --recycle /data/recycle
 ```
 
-## 使用docker-compose
+## 一键Docker部署
+
+### Windows系统
+
+```cmd
+# 便捷启动脚本
+scripts\\docker_deploy.bat "D:\\Video"
+
+# 回收模式
+scripts\\docker_deploy.bat "D:\\Video" "D:\\Recycle"
+```
+
+### Linux/macOS系统
 
 ```bash
-# 下载docker-compose.yml
-curl -fsSL https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/docker/docker-compose.yml -o docker-compose.yml
+# 添加执行权限
+chmod +x scripts/docker_deploy.sh
 
-# 启动服务（预览模式）
-docker-compose up
+# 便捷启动脚本
+./scripts/docker_deploy.sh "/volume1/Video"
 
-# 修改命令为回收模式后再次启动
-# 将command字段改为: ["/data/video", "--recycle", "/data/recycle"]
+# 回收模式
+./scripts/docker_deploy.sh "/volume1/Video" "/volume1/Recycle"
+```
+
+### 手动Docker命令
+
+```bash
+# 拉取镜像
+docker pull baiyiren/media-nfo-cleaner:latest
+
+# 预览模式
+docker run -it --rm \
+  -v /volume1/Video:/data/video \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run
+
+# 回收模式
+docker run -it --rm \
+  -v /volume1/Video:/data/video \
+  -v /volume1/homes/admin/recycle:/data/recycle \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --recycle /data/recycle
 ```
 
 ## 常见问题
