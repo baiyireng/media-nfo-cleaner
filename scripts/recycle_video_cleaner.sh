@@ -1,5 +1,5 @@
 #!/bin/bash
-# DXP4800 NAS视频库清理工具 - 回收模式专用脚本 (Linux/Shell版本)
+# 视频库清理工具 - 回收模式专用脚本 (Linux/Shell版本)
 
 # 设置脚本编码为UTF-8
 export LANG=en_US.UTF-8
@@ -20,7 +20,7 @@ fi
 VIDEO_DIR="$1"
 RECYCLE_DIR="$2"
 
-echo "DXP4800 NAS视频库清理工具 - 回收模式"
+echo "视频库清理工具 - 回收模式"
 echo
 
 # 显示帮助信息

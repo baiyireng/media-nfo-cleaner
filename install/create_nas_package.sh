@@ -1,7 +1,7 @@
 #!/bin/bash
-# 创建NAS部署包脚本
+# 创建部署包脚本
 
-echo "创建DXP4800 NAS视频库清理工具部署包"
+echo "创建视频库清理工具部署包"
 echo "===================================="
 echo
 
@@ -28,7 +28,7 @@ cp docs/README_NAS_Setup.md "$TEMP_DIR/"
 
 # 创建部署说明
 cat > "$TEMP_DIR/DEPLOY_README.txt" << EOF
-DXP4800 NAS视频库清理工具部署说明
+DXP4800 视频库清理工具部署说明
 =================================
 
 1. 将此压缩包上传到NAS系统
@@ -60,7 +60,7 @@ echo "文件名: $PACKAGE_NAME"
 echo "大小: $(ls -lh "$PACKAGE_NAME" | awk '{print $5}')"
 echo
 echo "现在可以将此压缩包上传到NAS系统进行部署"
-echo "上传后，在NAS上执行以下命令:"
+echo "上传后，在服务器上执行以下命令:"
 echo "  tar -xzf $PACKAGE_NAME"
 echo "  cd dxp4800_video_cleaner"
 echo "  chmod +x *.sh"

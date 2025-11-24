@@ -1,11 +1,11 @@
 #!/bin/bash
-# DXP4800 NAS视频库清理工具 - 安装脚本
+# 视频库清理工具 - 安装脚本
 
 # 设置脚本编码为UTF-8
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-echo "DXP4800 NAS视频库清理工具 - 安装向导"
+echo "视频库清理工具 - 安装向导"
 echo "======================================="
 echo
 

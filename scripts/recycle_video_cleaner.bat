@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-echo DXP4800 NAS视频库清理工具 - 回收模式
+echo 视频库清理工具 - 回收模式
 echo.
 
 if "%~1"=="" (

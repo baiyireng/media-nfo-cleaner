@@ -1,5 +1,5 @@
 #!/bin/bash
-# DXP4800 NAS视频库清理工具 - Linux/Shell版本
+# 视频库清理工具 - Linux/Shell版本
 
 # 设置脚本编码为UTF-8
 export LANG=en_US.UTF-8
@@ -17,7 +17,7 @@ else
     PYTHON_CMD="python3"
 fi
 
-echo "DXP4800 NAS视频库清理工具"
+echo "视频库清理工具"
 echo
 
 # 显示帮助信息
