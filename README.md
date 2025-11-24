@@ -56,14 +56,30 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/baiyireng/media-nfo-clea
 ```
 
 **Windows用户**:
-1. 打开命令提示符（CMD）或PowerShell
+1. 打开命令提示符（CMD）
 2. 复制并运行以下命令：
+
 ```cmd
-powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat' -OutFile 'install.bat'; .\install.bat"
+# 下载安装脚本
+curl -L -o install.bat https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat
+
+# 运行安装脚本
+start install.bat
 ```
 
-或者直接下载并运行 `install.bat` 文件:
-https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat
+或者使用PowerShell（推荐）：
+
+```powershell
+# 设置执行策略
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 下载并运行安装脚本
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.ps1' -OutFile 'install.ps1'; .\install.ps1
+```
+
+或者直接下载并运行 `install.bat` 或 `install.ps1` 文件:
+- https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat
+- https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.ps1
 
 ### 本地安装
 

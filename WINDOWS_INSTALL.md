@@ -18,7 +18,18 @@ Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/baiyireng/media-nfo-cl
 2. 复制并运行以下命令：
 
 ```cmd
-powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat' -OutFile 'install.bat'; .\install.bat"
+# 下载安装脚本
+curl -L -o install.bat https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat
+
+# 运行安装脚本
+start install.bat
+```
+
+或者使用PowerShell命令：
+
+```cmd
+# 使用PowerShell下载和运行
+powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat' -OutFile 'install.bat'; Start-Process cmd.exe '/k .\install.bat'"
 ```
 
 3. 按照提示完成安装
