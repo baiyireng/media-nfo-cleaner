@@ -23,7 +23,7 @@ install-local:
 # 远程安装
 install:
 	@echo "运行远程安装脚本..."
-	@bash -c "$(curl -fsSL https://raw.githubusercontent.com/northsea4/mdcx-docker/main/install.sh)"
+	@bash -c "$(curl -fsSL https://github.com/baiyireng/media-nfo-cleaner/blob/main/install.sh)"
 
 # 测试
 test:
@@ -62,7 +62,7 @@ docker-push:
 package:
 	@echo "创建发布包..."
 	@mkdir -p dist
-	@tar -czf dist/dxp4800-video-cleaner.tar.gz \
+	@tar -czf dist/media-video-cleaner.tar.gz \
 		--exclude=dist \
 		--exclude=.git \
 		--exclude=.gitignore \
@@ -71,7 +71,7 @@ package:
 		--exclude=CONTRIBUTING.md \
 		--exclude=install.sh \
 		.
-	@echo "发布包创建完成: dist/dxp4800-video-cleaner.tar.gz"
+	@echo "发布包创建完成: dist/media-video-cleaner.tar.gz"
 
 # 完整发布流程
 release: clean test docker-build package
