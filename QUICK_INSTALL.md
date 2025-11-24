@@ -10,19 +10,19 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/northsea4/mdcx-docker/ma
 
 ```bash
 # 拉取镜像
-docker pull northsea4/dxp4800-video-cleaner:latest
+docker pull baiyireng/media-nfo-cleaner:latest
 
 # 运行预览模式
 docker run -it --rm \
   -v /volume1/Video:/data/video \
-  northsea4/dxp4800-video-cleaner:latest \
+  baiyireng/media-nfo-cleaner:latest \
   /data/video --dry-run
 
 # 运行回收模式
 docker run -it --rm \
   -v /volume1/Video:/data/video \
   -v /volume1/homes/admin/recycle:/data/recycle \
-  northsea4/dxp4800-video-cleaner:latest \
+  baiyireng/media-nfo-cleaner:latest \
   /data/video --recycle /data/recycle
 ```
 

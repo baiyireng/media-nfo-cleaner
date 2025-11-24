@@ -48,13 +48,13 @@ clean:
 # 构建Docker镜像
 docker-build:
 	@echo "构建Docker镜像..."
-	@docker build -t northsea4/dxp4800-video-cleaner:latest -f docker/Dockerfile .
+	@docker build -t baiyireng/media-nfo-cleaner:latest -f docker/Dockerfile .
 	@echo "Docker镜像构建完成!"
 
 # 推送Docker镜像
 docker-push:
 	@echo "推送Docker镜像到仓库..."
-	@docker push northsea4/dxp4800-video-cleaner:latest
+	@docker push baiyireng/media-nfo-cleaner:latest
 	@echo "Docker镜像推送完成!"
 
 # 创建发布包

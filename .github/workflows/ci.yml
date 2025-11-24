@@ -64,7 +64,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: northsea4/dxp4800-video-cleaner
+        images: baiyireng/media-nfo-cleaner
         tags: |
           type=ref,event=branch
           type=ref,event=pr

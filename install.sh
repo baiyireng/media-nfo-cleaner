@@ -13,8 +13,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 项目信息
-REPO_OWNER="northsea4"
-REPO_NAME="mdcx-docker"
+REPO_OWNER="baiyireng"
+REPO_NAME="media-nfo-cleaner"
 GITHUB_URL="https://github.com/${REPO_OWNER}/${REPO_NAME}"
 RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main"
 
