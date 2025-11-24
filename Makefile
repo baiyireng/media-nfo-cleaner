@@ -1,10 +1,13 @@
-# DXP4800 NAS视频库清理工具 Makefile
+# 视频库清理工具 Makefile
+SHELL := /bin/bash
+export LANG := zh_CN.UTF-8
+export LC_ALL := zh_CN.UTF-8
 
 .PHONY: help install install-local install-docker test clean build docker-build docker-push release
 
 # 默认目标
 help:
-	@echo "DXP4800 NAS视频库清理工具 - 可用命令:"
+	@echo "视频库清理工具 - 可用命令:"
 	@echo "  install-local  - 本地安装工具"
 	@echo "  install       - 运行远程安装脚本"
 	@echo "  test          - 运行测试"
