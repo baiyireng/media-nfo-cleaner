@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  media-nfo-cleaner:
+    image: baiyireng/media-nfo-cleaner:latest
+    container_name: media-nfo-cleaner
+    volumes:
+      - /path/to/your/video/library:/data/video
+      - /path/to/recycle/directory:/data/recycle  # 可选，用于回收模式
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["/data/video"]  # 默认命令参数，可以修改为 --dry-run 或 --recycle /data/recycle
+
+  # 或者，如果您想直接从源代码构建
+  media-nfo-cleaner-build:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: baiyireng/media-nfo-cleaner:latest
+    container_name: media-nfo-cleaner-build
+    volumes:
+      - /path/to/your/video/library:/data/video
+      - /path/to/recycle/directory:/data/recycle  # 可选，用于回收模式
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["/data/video"]  # 默认命令参数，可以修改为 --dry-run 或 --recycle /data/recycle
+    profiles:
+      - build  # 使用 profile 来控制是否构建

@@ -60,9 +60,15 @@ chmod +x install/install_for_nas.sh
 
 ### Docker部署
 
+#### 从源代码构建
+
 ```bash
-# 拉取镜像
-docker pull baiyireng/media-nfo-cleaner:latest
+# 克隆仓库
+git clone https://github.com/baiyireng/media-nfo-cleaner.git
+cd media-nfo-cleaner
+
+# 构建Docker镜像
+docker build -t baiyireng/media-nfo-cleaner:latest -f docker/Dockerfile .
 
 # 运行容器（挂载视频目录）
 docker run -it --rm \
@@ -71,6 +77,19 @@ docker run -it --rm \
   baiyireng/media-nfo-cleaner:latest \
   /data/video --recycle /data/recycle
 ```
+
+#### 使用Docker Compose
+
+```bash
+# 克隆仓库
+git clone https://github.com/baiyireng/media-nfo-cleaner.git
+cd media-nfo-cleaner
+
+# 使用Docker Compose运行
+docker-compose run --rm media-nfo-cleaner /data/video --dry-run
+```
+
+详细Docker使用指南请参考：[Docker部署指南](docs/DOCKER.md)
 
 ## 平台特定启动命令
 
