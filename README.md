@@ -81,6 +81,13 @@ $wc.DownloadFile('https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/
 .\install.ps1
 ```
 
+或者使用PowerShell命令行安装：
+
+```cmd
+# 使用PowerShell下载和运行（推荐使用WebClient确保UTF-8编码）
+powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $wc = New-Object System.Net.WebClient; $wc.Encoding = [System.Text.Encoding]::UTF8; $wc.DownloadFile('https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat', 'install.bat'); Start-Process cmd.exe '/k .\install.bat'"
+```
+
 或者直接下载并运行 `install.bat` 或 `install.ps1` 文件:
 - https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat
 - https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.ps1

@@ -35,7 +35,7 @@ start install.bat
 
 ```cmd
 # 使用PowerShell下载和运行
-powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat' -OutFile 'install.bat'; Start-Process cmd.exe '/k .\install.bat'"
+powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $wc = New-Object System.Net.WebClient; $wc.Encoding = [System.Text.Encoding]::UTF8; $wc.DownloadFile('https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.bat', 'install.bat'); Start-Process cmd.exe '/k .\install.bat'"
 ```
 
 3. 按照提示完成安装
