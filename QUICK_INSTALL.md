@@ -25,8 +25,12 @@ start install.bat
 # 设置执行策略
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-# 下载并运行安装脚本
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.ps1' -OutFile 'install.ps1'; .\install.ps1
+# 下载并运行安装脚本（推荐使用WebClient确保UTF-8编码）
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$wc = New-Object System.Net.WebClient
+$wc.Encoding = [System.Text.Encoding]::UTF8
+$wc.DownloadFile('https://raw.githubusercontent.com/baiyireng/media-nfo-cleaner/main/install.ps1', 'install.ps1')
+.\install.ps1
 ```
 
 或者直接下载并运行 `install.bat` 或 `install.ps1` 文件:
