@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   video-cleaner:
-    image: baiyireng/media-nfo-cleaner:latest
+    image: baiyiren/media-nfo-cleaner:latest
     container_name: media-nfo-cleaner
     volumes:
       # 挂载您的视频目录

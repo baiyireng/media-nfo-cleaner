@@ -48,14 +48,15 @@ clean:
 # 构建Docker镜像
 docker-build:
 	@echo "构建Docker镜像..."
-	@docker build -t baiyireng/media-nfo-cleaner:latest -f docker/Dockerfile .
+	@docker build -t baiyiren/media-nfo-cleaner:latest -f docker/Dockerfile .
 	@echo "Docker镜像构建完成!"
 
 # 推送Docker镜像
 docker-push:
 	@echo "推送Docker镜像到仓库..."
-	@docker push baiyireng/media-nfo-cleaner:latest
+	@docker push baiyiren/media-nfo-cleaner:latest
 	@echo "Docker镜像推送完成!"
+	@echo "发布完成!"
 
 # 创建发布包
 package:

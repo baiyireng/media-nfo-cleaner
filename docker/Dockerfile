@@ -1,24 +1,20 @@
 # 视频库清理工具 Docker镜像
-FROM docker-mirror.aigc2d.com/library/nginx:latest
+FROM python:3.11-slim
 
 # 设置维护者
 LABEL maintainer="baiyireng"
 LABEL description="视频库清理工具"
 LABEL version="1.0.0"
 
-# 切换到root用户安装软件
-USER root
+# 设置工作目录
+WORKDIR /app
 
-# 安装Python和其他必要软件
+# 安装必要的系统依赖
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        python3 \
         curl \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
-
-# 设置工作目录
-WORKDIR /app
 
 # 复制Python脚本
 COPY bin/video_library_cleaner.py /app/
@@ -36,7 +32,7 @@ ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
 # 创建非root用户
-RUN useradd -m -s /bin/bash appuser && \
+RUN adduser --disabled-password --gecos '' appuser && \
     chown -R appuser:appuser /app
 
 # 切换到非root用户

@@ -68,13 +68,13 @@ git clone https://github.com/baiyireng/media-nfo-cleaner.git
 cd media-nfo-cleaner
 
 # 构建Docker镜像
-docker build -t baiyireng/media-nfo-cleaner:latest -f docker/Dockerfile .
+docker build -t baiyiren/media-nfo-cleaner:latest -f docker/Dockerfile .
 
 # 运行容器（挂载视频目录）
 docker run -it --rm \
   -v /volume1/Video:/data/video \
   -v /volume1/homes/admin/video_cleaner/recycle:/data/recycle \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --recycle /data/recycle
 ```
 
@@ -179,7 +179,7 @@ python3 bin/video_library_cleaner.py "/Users/username/Movies" --dry-run
 ```bash
 docker run -it --rm \
   -v /volume1/Video:/data/video \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --dry-run
 ```
 
@@ -188,7 +188,7 @@ docker run -it --rm \
 docker run -it --rm \
   -v /volume1/Video:/data/video \
   -v /volume1/homes/admin/recycle:/data/recycle \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --recycle /data/recycle
 ```
 

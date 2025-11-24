@@ -10,7 +10,7 @@ if [ $# -eq 0 ]; then
     echo "视频库清理工具 - Docker版本"
     echo
     echo "用法:"
-    echo "  docker run [OPTIONS] baiyireng/media-nfo-cleaner:latest [视频目录] [选项]"
+    echo "  docker run [OPTIONS] baiyiren/media-nfo-cleaner:latest [视频目录] [选项]"
     echo
     echo "选项:"
     echo "  --dry-run           预览模式，不实际删除文件"
@@ -18,10 +18,10 @@ if [ $# -eq 0 ]; then
     echo
     echo "示例:"
     echo "  # 预览模式"
-    echo "  docker run -v /volume1/Video:/data/video baiyireng/media-nfo-cleaner:latest /data/video --dry-run"
+    echo "  docker run -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run"
     echo
     echo "  # 回收模式"
-    echo "  docker run -v /volume1/Video:/data/video -v /volume1/homes/admin/recycle:/data/recycle baiyireng/media-nfo-cleaner:latest /data/video --recycle /data/recycle"
+    echo "  docker run -v /volume1/Video:/data/video -v /volume1/homes/admin/recycle:/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle"
     exit 0
 fi
 

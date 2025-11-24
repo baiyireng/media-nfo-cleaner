@@ -14,7 +14,7 @@ cd media-nfo-cleaner
 
 2. 构建Docker镜像：
 ```bash
-docker build -t baiyireng/media-nfo-cleaner:latest -f docker/Dockerfile .
+docker build -t baiyiren/media-nfo-cleaner:latest -f docker/Dockerfile .
 ```
 
 3. 或者使用Docker Compose构建：
@@ -25,7 +25,7 @@ docker-compose --profile build build
 ### 从Docker Hub拉取（如果已发布）
 
 ```bash
-docker pull baiyireng/media-nfo-cleaner:latest
+docker pull baiyiren/media-nfo-cleaner:latest
 ```
 
 ## 使用Docker镜像
@@ -35,7 +35,7 @@ docker pull baiyireng/media-nfo-cleaner:latest
 ```bash
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --dry-run
 ```
 
@@ -45,7 +45,7 @@ docker run --rm \
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
   -v /path/to/recycle/directory:/data/recycle \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --recycle /data/recycle
 ```
 
@@ -54,7 +54,7 @@ docker run --rm \
 ```bash
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video
 ```
 
@@ -104,7 +104,7 @@ docker-compose run --rm media-nfo-cleaner /data/video
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
   --user $(id -u):$(id -g) \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --dry-run
 ```
 
@@ -115,7 +115,7 @@ docker run --rm \
 ```bash
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --dry-run --verbose
 ```
 
@@ -127,5 +127,5 @@ docker run --rm \
 docker run --rm -it \
   -v /path/to/your/video/library:/data/video \
   --entrypoint /bin/bash \
-  baiyireng/media-nfo-cleaner:latest
+  baiyiren/media-nfo-cleaner:latest
 ```

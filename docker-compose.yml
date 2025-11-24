@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   media-nfo-cleaner:
-    image: baiyireng/media-nfo-cleaner:latest
+    image: baiyiren/media-nfo-cleaner:latest
     container_name: media-nfo-cleaner
     volumes:
       - /path/to/your/video/library:/data/video
@@ -16,7 +16,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: baiyireng/media-nfo-cleaner:latest
+    image: baiyiren/media-nfo-cleaner:latest
     container_name: media-nfo-cleaner-build
     volumes:
       - /path/to/your/video/library:/data/video

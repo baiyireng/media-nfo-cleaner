@@ -27,30 +27,30 @@ baiyireng/media-nfo-cleaner     latest    a22bc704be3d    1 minutes ago    288MB
 
 ```bash
 # Windows CMD
-docker run --rm -v "D:\Path\To\Videos":/data/video baiyireng/media-nfo-cleaner:latest /data/video --dry-run
+docker run --rm -v "D:\Path\To\Videos":/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
 
 # Linux/macOS
-docker run --rm -v /path/to/videos:/data/video baiyireng/media-nfo-cleaner:latest /data/video --dry-run
+docker run --rm -v /path/to/videos:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
 ```
 
 ### 回收模式
 
 ```bash
 # Windows CMD
-docker run --rm -v "D:\Path\To\Videos":/data/video -v "D:\Path\To\Recycle":/data/recycle baiyireng/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+docker run --rm -v "D:\Path\To\Videos":/data/video -v "D:\Path\To\Recycle":/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
 
 # Linux/macOS
-docker run --rm -v /path/to/videos:/data/video -v /path/to/recycle:/data/recycle baiyireng/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+docker run --rm -v /path/to/videos:/data/video -v /path/to/recycle:/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
 ```
 
 ### 直接删除模式（谨慎使用）
 
 ```bash
 # Windows CMD
-docker run --rm -v "D:\Path\To\Videos":/data/video baiyireng/media-nfo-cleaner:latest /data/video
+docker run --rm -v "D:\Path\To\Videos":/data/video baiyiren/media-nfo-cleaner:latest /data/video
 
 # Linux/macOS
-docker run --rm -v /path/to/videos:/data/video baiyireng/media-nfo-cleaner:latest /data/video
+docker run --rm -v /path/to/videos:/data/video baiyiren/media-nfo-cleaner:latest /data/video
 ```
 
 ## 注意事项
@@ -61,7 +61,7 @@ docker run --rm -v /path/to/videos:/data/video baiyireng/media-nfo-cleaner:lates
 
 3. **权限问题**：确保Docker容器有足够权限访问和修改映射的目录。如遇权限问题，可以添加`--user`参数：
    ```bash
-   docker run --rm --user $(id -u):$(id -g) -v /path/to/videos:/data/video baiyireng/media-nfo-cleaner:latest /data/video --dry-run
+   docker run --rm --user $(id -u):$(id -g) -v /path/to/videos:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
    ```
 
 4. **回收目录**：使用回收模式时，确保回收目录存在并有足够空间。
@@ -77,7 +77,7 @@ version: '3.8'
 
 services:
   media-nfo-cleaner:
-    image: baiyireng/media-nfo-cleaner:latest
+    image: baiyiren/media-nfo-cleaner:latest
     container_name: media-nfo-cleaner
     volumes:
       - /path/to/your/video/library:/data/video
@@ -131,7 +131,7 @@ docker-compose run --rm media-nfo-cleaner /data/video
 要查看完整的帮助信息：
 
 ```bash
-docker run --rm baiyireng/media-nfo-cleaner:latest
+docker run --rm baiyiren/media-nfo-cleaner:latest
 ```
 
 或者访问项目主页获取更多帮助和文档。

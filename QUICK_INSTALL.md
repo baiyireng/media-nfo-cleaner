@@ -51,19 +51,19 @@ scripts\run_video_cleaner.bat "D:\Video" --recycle "Recycle"
 
 ```bash
 # 拉取镜像
-docker pull baiyireng/media-nfo-cleaner:latest
+docker pull baiyiren/media-nfo-cleaner:latest
 
 # 预览模式
 docker run -it --rm \
   -v /volume1/Video:/data/video \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --dry-run
 
 # 回收模式
 docker run -it --rm \
   -v /volume1/Video:/data/video \
   -v /volume1/homes/admin/recycle:/data/recycle \
-  baiyireng/media-nfo-cleaner:latest \
+  baiyiren/media-nfo-cleaner:latest \
   /data/video --recycle /data/recycle
 ```
 
