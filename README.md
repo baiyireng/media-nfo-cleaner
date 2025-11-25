@@ -53,10 +53,13 @@ chmod +x scripts/docker_deploy.sh
 ./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp" --ignore-dir "sample"
 
 # 限制目录大小
-./scripts/docker_deploy.sh "/volume1/Video" --dry-run --max-size 1024
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --max-dir-size "1GB"
+
+# 限制文件大小
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --max-file-size "10MB"
 
 # 组合选项
-./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp" --max-size 1024
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-dir-size "1GB" --max-file-size "10MB"
 ```
 
 ### 远程一键安装（推荐）

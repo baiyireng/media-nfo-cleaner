@@ -13,10 +13,11 @@ if [ $# -eq 0 ]; then
     echo "  docker run [OPTIONS] baiyiren/media-nfo-cleaner:latest [视频目录] [选项]"
     echo
     echo "选项:"
-    echo "  --dry-run             预览模式，不实际删除文件"
-    echo "  --recycle [目录]      回收模式，将删除内容移动到指定目录"
-    echo "  --ignore-dir [目录]    指定要忽略的目录，可多次使用"
-    echo "  --max-size [MB]       限制处理的目录最大大小(MB)，0表示不限制"
+    echo "  --dry-run               预览模式，不实际删除文件"
+    echo "  --recycle [目录]        回收模式，将删除内容移动到指定目录"
+    echo "  --ignore-dir [目录]      指定要忽略的目录，可多次使用"
+    echo "  --max-dir-size [大小]    限制处理的目录最大大小，支持KB, MB, GB等单位"
+    echo "  --max-file-size [大小]    限制处理的文件最大大小，支持KB, MB, GB等单位"
     echo
     echo "示例:"
     echo "  # 预览模式"
@@ -26,7 +27,10 @@ if [ $# -eq 0 ]; then
     echo "  docker run -v /volume1/Video:/data/video -v /volume1/homes/admin/recycle:/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle"
     echo
     echo "  # 忽略目录并限制大小"
-    echo "  docker run -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --ignore-dir \"temp\" --ignore-dir \"sample\" --max-size 1024"
+    echo "  docker run -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --ignore-dir \"temp\" --ignore-dir \"sample\" --max-dir-size 1GB"
+    echo
+    echo "  # 限制文件大小"
+    echo "  docker run -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --max-file-size 10MB"
     exit 0
 fi
 

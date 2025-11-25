@@ -113,31 +113,65 @@ docker run --rm \
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
   baiyiren/media-nfo-cleaner:latest \
-  /data/video --dry-run --max-size 1024
+  /data/video --dry-run --max-dir-size "1GB"
 
 # 只处理小于500MB的目录
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
   baiyiren/media-nfo-cleaner:latest \
-  /data/video --dry-run --max-size 512
+  /data/video --dry-run --max-dir-size "512MB"
+```
+
+#### 限制文件大小
+
+```bash
+# 只处理小于10MB的残留文件
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run --max-file-size "10MB"
+
+# 只处理小于100KB的残留文件
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run --max-file-size "100KB"
 ```
 
 #### 组合选项
 
 ```bash
-# 预览模式，忽略特定目录，并限制目录大小
+# 预览模式，忽略特定目录，并限制目录和文件大小
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
   baiyiren/media-nfo-cleaner:latest \
-  /data/video --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-size 1024
+  /data/video --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-dir-size "1GB" --max-file-size "10MB"
 
-# 回收模式，忽略特定目录，并限制目录大小
+# 回收模式，忽略特定目录，并限制目录和文件大小
 docker run --rm \
   -v /path/to/your/video/library:/data/video \
   -v /path/to/recycle/directory:/data/recycle \
   baiyiren/media-nfo-cleaner:latest \
-  /data/video --recycle /data/recycle --ignore-dir "temp" --max-size 2048
+  /data/video --recycle /data/recycle --ignore-dir "temp" --max-dir-size "2GB" --max-file-size "5MB"
 ```
+
+### 大小单位说明
+
+工具支持以下大小单位：
+
+- **B** - 字节
+- **KB** 或 **K** - 千字节 (1024字节)
+- **MB** 或 **M** - 兆字节 (1024KB)
+- **GB** 或 **G** - 吉字节 (1024MB)
+- **TB** 或 **T** - 太字节 (1024GB)
+
+如果不指定单位，默认为MB。
+
+示例：
+- `--max-dir-size "1.5GB"` - 1.5吉字节
+- `--max-file-size "1024"` - 1024兆字节(默认单位)
+- `--max-dir-size "500MB"` - 500兆字节
+- `--max-file-size "10KB"` - 10千字节
 
 ### 使用Docker Compose
 

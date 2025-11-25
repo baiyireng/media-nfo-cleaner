@@ -195,7 +195,7 @@ def move_to_recycle(source, recycle_dir, preserve_structure=True, base_dir=None)
         print(f"移动到回收站失败: {e}")
         return False
 
-def process_root_nfo_files(root_dir, dry_run=False, recycle_dir=None):
+def process_root_nfo_files(root_dir, dry_run=False, recycle_dir=None, max_file_size_bytes=0):
     """处理根目录下的NFO文件"""
     print(f"\n检查根目录下的NFO文件: {root_dir}")
     
@@ -207,6 +207,11 @@ def process_root_nfo_files(root_dir, dry_run=False, recycle_dir=None):
         return
     
     for nfo_file in nfo_files:
+        # 检查文件大小限制
+        if max_file_size_bytes > 0 and not check_file_size(nfo_file, max_file_size_bytes):
+            print(f"  跳过NFO文件（超过大小限制）: {nfo_file.name} ({format_size(nfo_file.stat().st_size)})")
+            continue
+        
         print(f"  检查NFO文件: {nfo_file.name}")
         
         # 检查是否存在同名的视频文件
@@ -282,26 +287,93 @@ def should_ignore_directory(dir_path, ignore_dirs, base_dir):
     
     return False
 
-def get_directory_size(dir_path, max_size_mb):
-    """计算目录大小，如果超过max_size_mb则返回False"""
-    if max_size_mb <= 0:
+def parse_size(size_str):
+    """解析大小字符串，支持KB, MB, GB, TB等单位，返回字节数"""
+    if not size_str:
+        return 0
+    
+    size_str = size_str.upper().strip()
+    # 如果只包含数字，默认为MB
+    if size_str.isdigit():
+        return int(size_str) * 1024 * 1024
+    
+    # 解析数字和单位
+    import re
+    match = re.match(r'^(\d+(?:\.\d+)?)\s*([KMGT]?B?)$', size_str)
+    if not match:
+        raise ValueError(f"无效的大小格式: {size_str}")
+    
+    value = float(match.group(1))
+    unit = match.group(2) or 'MB'  # 默认单位为MB
+    
+    # 转换为字节
+    multipliers = {
+        'B': 1,
+        'KB': 1024,
+        'K': 1024,
+        'MB': 1024 * 1024,
+        'M': 1024 * 1024,
+        'GB': 1024 * 1024 * 1024,
+        'G': 1024 * 1024 * 1024,
+        'TB': 1024 * 1024 * 1024 * 1024,
+        'T': 1024 * 1024 * 1024 * 1024
+    }
+    
+    if unit not in multipliers:
+        raise ValueError(f"不支持的大小单位: {unit}")
+    
+    return int(value * multipliers[unit])
+
+def format_size(bytes_size):
+    """格式化字节数为人类可读的大小字符串"""
+    if bytes_size == 0:
+        return "0B"
+    
+    units = ['B', 'KB', 'MB', 'GB', 'TB']
+    i = 0
+    size = float(bytes_size)
+    
+    while size >= 1024 and i < len(units) - 1:
+        size /= 1024
+        i += 1
+    
+    return f"{size:.2f}{units[i]}"
+
+def get_directory_size(dir_path, max_size_bytes):
+    """计算目录大小，如果超过max_size_bytes则返回False"""
+    if max_size_bytes <= 0:
         return True  # 大小为0或负数表示不限制
     
     total_size = 0
-    max_size_bytes = max_size_mb * 1024 * 1024
     
     try:
         for file_path in dir_path.rglob('*'):
             if file_path.is_file():
                 total_size += file_path.stat().st_size
                 if total_size > max_size_bytes:
+                    print(f"  目录大小已超过限制: {format_size(total_size)} > {format_size(max_size_bytes)}")
                     return False
         return True
     except Exception as e:
         print(f"计算目录大小时出错: {e}")
         return True  # 出错时默认允许处理
 
-def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=None, max_file_size_mb=0):
+def check_file_size(file_path, max_file_size_bytes):
+    """检查文件大小是否超过限制"""
+    if max_file_size_bytes <= 0:
+        return True  # 大小为0或负数表示不限制
+    
+    try:
+        file_size = file_path.stat().st_size
+        if file_size > max_file_size_bytes:
+            print(f"  文件大小超过限制: {file_path.name} ({format_size(file_size)} > {format_size(max_file_size_bytes)})")
+            return False
+        return True
+    except Exception as e:
+        print(f"检查文件大小时出错: {e}")
+        return True  # 出错时默认允许处理
+
+def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=None, max_dir_size="0", max_file_size="0"):
     """处理指定目录"""
     print(f"\n处理目录: {directory}")
     
@@ -309,12 +381,24 @@ def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=No
     if ignore_dirs:
         print(f"忽略目录: {', '.join(ignore_dirs)}")
     
+    # 解析大小限制
+    try:
+        max_dir_size_bytes = parse_size(max_dir_size)
+        max_file_size_bytes = parse_size(max_file_size)
+    except ValueError as e:
+        print(f"错误: {e}")
+        return
+    
+    # 处理目录大小限制
+    if max_dir_size_bytes > 0:
+        print(f"目录大小限制: {format_size(max_dir_size_bytes)}")
+    
     # 处理文件大小限制
-    if max_file_size_mb > 0:
-        print(f"文件大小限制: {max_file_size_mb}MB")
+    if max_file_size_bytes > 0:
+        print(f"文件大小限制: {format_size(max_file_size_bytes)}")
     
     # 首先处理根目录下的NFO文件
-    process_root_nfo_files(directory, dry_run, recycle_dir)
+    process_root_nfo_files(directory, dry_run, recycle_dir, max_file_size_bytes)
     
     # 查找所有子目录中的NFO文件
     nfo_files = list(Path(directory).glob('**/*.nfo'))
@@ -353,14 +437,15 @@ def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=No
             continue
         
         # 检查目录大小限制
-        if not get_directory_size(dir_path, max_file_size_mb):
-            print(f"  目录大小超过限制 ({max_file_size_mb}MB)，跳过: {dir_path}")
+        if not get_directory_size(dir_path, max_dir_size_bytes):
+            print(f"  目录大小超过限制 ({format_size(max_dir_size_bytes)})，跳过: {dir_path}")
             continue
         
         # 查找该目录下的所有文件
         all_files = list(dir_path.glob('*'))
         video_files = [f for f in all_files if f.is_file() and is_video_file(f)]
         nfo_files_in_dir = [f for f in all_files if f.is_file() and f.suffix.lower() == '.nfo']
+        other_files = [f for f in all_files if f.is_file() and is_residual_file(f)]
         
         # 如果有视频文件，跳过此目录
         if video_files:
@@ -368,8 +453,8 @@ def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=No
             continue
         
         # 如果没有视频文件但有NFO文件，进一步检查
-        if nfo_files_in_dir:
-            print(f"  发现NFO文件但没有视频文件: {[f.name for f in nfo_files_in_dir]}")
+        if nfo_files_in_dir or other_files:
+            files_to_process = []
             
             # 检查每个NFO文件对应的视频是否存在
             all_videos_exist = True
@@ -386,30 +471,42 @@ def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=No
                 else:
                     print(f"    视频文件不存在: {video_path}")
                     all_videos_exist = False
+                    files_to_process.append(nfo_file)
             
-            # 如果所有对应的视频都不存在，且目录中没有其他视频文件，则删除目录
-            if not all_videos_exist and not video_files:
-                print(f"  确认删除目录: {dir_path}")
+            # 检查其他残留文件的大小
+            for file in other_files:
+                if not check_file_size(file, max_file_size_bytes):
+                    continue  # 跳过超过大小限制的文件
+                files_to_process.append(file)
+            
+            # 如果有需要处理的文件，则处理
+            if files_to_process:
+                print(f"  发现以下需要处理的文件:")
+                for f in files_to_process:
+                    print(f"    - {f.name} ({format_size(f.stat().st_size)})")
                 
-                if dry_run:
-                    if recycle_dir:
-                        print(f"    [DRY RUN] 将移动目录到回收站")
-                    else:
-                        print(f"    [DRY RUN] 将删除目录及其内容")
-                else:
-                    if recycle_dir:
-                        # 移动到回收站，传递基础目录以处理回收目录在源目录内的情况
-                        if move_to_recycle(dir_path, recycle_dir, True, directory):
-                            print(f"    已移动目录到回收站")
+                if not all_videos_exist and not video_files:
+                    print(f"  确认删除文件和目录: {dir_path}")
+                    
+                    if dry_run:
+                        if recycle_dir:
+                            print(f"    [DRY RUN] 将移动目录到回收站")
                         else:
-                            print(f"    移动目录失败")
+                            print(f"    [DRY RUN] 将删除目录及其内容")
                     else:
-                        # 直接删除
-                        try:
-                            shutil.rmtree(dir_path)
-                            print(f"    已删除目录及其内容")
-                        except Exception as e:
-                            print(f"    删除目录失败: {e}")
+                        if recycle_dir:
+                            # 移动到回收站，传递基础目录以处理回收目录在源目录内的情况
+                            if move_to_recycle(dir_path, recycle_dir, True, directory):
+                                print(f"    已移动目录到回收站")
+                            else:
+                                print(f"    移动目录失败")
+                        else:
+                            # 直接删除
+                            try:
+                                shutil.rmtree(dir_path)
+                                print(f"    已删除目录及其内容")
+                            except Exception as e:
+                                print(f"    删除目录失败: {e}")
 
 def main():
     parser = argparse.ArgumentParser(description='视频库清理工具')
@@ -420,8 +517,10 @@ def main():
                        help='回收模式：将删除的内容移动到指定目录而非永久删除')
     parser.add_argument('--ignore-dir', action='append', dest='ignore_dirs', metavar='DIR',
                        help='指定要忽略的目录，可多次使用。支持相对路径和绝对路径')
-    parser.add_argument('--max-size', type=int, dest='max_size_mb', default=0, metavar='SIZE_MB',
-                       help='限制处理的目录最大大小(MB)，0或负数表示不限制(默认)')
+    parser.add_argument('--max-dir-size', type=str, dest='max_dir_size', default='0', metavar='SIZE',
+                       help='限制处理的目录最大大小，支持KB, MB, GB等单位 (默认: 0=不限制)')
+    parser.add_argument('--max-file-size', type=str, dest='max_file_size', default='0', metavar='SIZE',
+                       help='限制处理的文件最大大小，支持KB, MB, GB等单位 (默认: 0=不限制)')
     
     args = parser.parse_args()
     
@@ -455,7 +554,7 @@ def main():
         print(f"运行模式: 直接删除模式")
     
     try:
-        process_directory(args.directory, args.dry_run, recycle_dir, args.ignore_dirs, args.max_size_mb)
+        process_directory(args.directory, args.dry_run, recycle_dir, args.ignore_dirs, args.max_dir_size, args.max_file_size)
         print("\n清理完成!")
     except KeyboardInterrupt:
         print("\n操作被用户中断")

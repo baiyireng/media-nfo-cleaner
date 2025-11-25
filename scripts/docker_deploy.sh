@@ -9,7 +9,8 @@ if [ -z "$1" ]; then
     echo "错误: 请指定视频库路径"
     echo "使用方法: $0 \"/path/to/video/library\" [选项]"
     echo "示例: $0 \"/volume1/Video\" --recycle \"/volume1/Recycle\""
-    echo "      $0 \"/volume1/Video\" --dry-run --ignore-dir \"temp\" --max-size 1024"
+    echo "      $0 \"/volume1/Video\" --dry-run --ignore-dir \"temp\" --max-dir-size \"1GB\""
+    echo "      $0 \"/volume1/Video\" --dry-run --max-file-size \"10MB\""
     exit 1
 fi
 
