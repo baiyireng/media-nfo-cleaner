@@ -88,6 +88,57 @@ docker run --rm \
   /data/video
 ```
 
+### 高级选项
+
+#### 忽略特定目录
+
+```bash
+# 忽略单个目录
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run --ignore-dir "temp"
+
+# 忽略多个目录
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run --ignore-dir "temp" --ignore-dir "sample" --ignore-dir "backup"
+```
+
+#### 限制目录大小
+
+```bash
+# 只处理小于1GB的目录
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run --max-size 1024
+
+# 只处理小于500MB的目录
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run --max-size 512
+```
+
+#### 组合选项
+
+```bash
+# 预览模式，忽略特定目录，并限制目录大小
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-size 1024
+
+# 回收模式，忽略特定目录，并限制目录大小
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  -v /path/to/recycle/directory:/data/recycle \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --recycle /data/recycle --ignore-dir "temp" --max-size 2048
+```
+
 ### 使用Docker Compose
 
 1. 修改`docker-compose.yml`中的卷路径：

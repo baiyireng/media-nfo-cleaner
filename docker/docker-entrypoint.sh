@@ -13,8 +13,10 @@ if [ $# -eq 0 ]; then
     echo "  docker run [OPTIONS] baiyiren/media-nfo-cleaner:latest [视频目录] [选项]"
     echo
     echo "选项:"
-    echo "  --dry-run           预览模式，不实际删除文件"
-    echo "  --recycle [目录]    回收模式，将删除内容移动到指定目录"
+    echo "  --dry-run             预览模式，不实际删除文件"
+    echo "  --recycle [目录]      回收模式，将删除内容移动到指定目录"
+    echo "  --ignore-dir [目录]    指定要忽略的目录，可多次使用"
+    echo "  --max-size [MB]       限制处理的目录最大大小(MB)，0表示不限制"
     echo
     echo "示例:"
     echo "  # 预览模式"
@@ -22,34 +24,29 @@ if [ $# -eq 0 ]; then
     echo
     echo "  # 回收模式"
     echo "  docker run -v /volume1/Video:/data/video -v /volume1/homes/admin/recycle:/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle"
+    echo
+    echo "  # 忽略目录并限制大小"
+    echo "  docker run -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --ignore-dir \"temp\" --ignore-dir \"sample\" --max-size 1024"
     exit 0
 fi
 
 # 默认参数
 VIDEO_DIR=""
-DRY_RUN=false
-RECYCLE_MODE=false
-RECYCLE_DIR=""
+ARGS=""
 
-# 解析参数
+# 解析参数，保留所有参数传递给Python脚本
 while [[ $# -gt 0 ]]; do
-    case $1 in
-        --dry-run)
-            DRY_RUN=true
-            shift
-            ;;
-        --recycle)
-            RECYCLE_MODE=true
-            RECYCLE_DIR="$2"
-            shift 2
-            ;;
-        *)
-            if [ -z "$VIDEO_DIR" ]; then
-                VIDEO_DIR="$1"
-            fi
-            shift
-            ;;
-    esac
+    if [ -z "$VIDEO_DIR" ]; then
+        VIDEO_DIR="$1"
+    else
+        # 将所有其他参数添加到ARGS变量中
+        if [ -z "$ARGS" ]; then
+            ARGS="$1"
+        else
+            ARGS="$ARGS $1"
+        fi
+    fi
+    shift
 done
 
 # 检查视频目录是否指定
@@ -65,24 +62,11 @@ if [ ! -d "$VIDEO_DIR" ]; then
     exit 1
 fi
 
-# 设置回收目录
-if [ "$RECYCLE_MODE" = true ]; then
-    if [ -z "$RECYCLE_DIR" ]; then
-        RECYCLE_DIR="/data/recycle"
-    fi
-    
-    # 创建回收目录
-    mkdir -p "$RECYCLE_DIR"
-    
-    # 构建命令
-    CMD="python3 /app/video_library_cleaner.py '$VIDEO_DIR' --recycle '$RECYCLE_DIR'"
+# 构建命令
+if [ -n "$ARGS" ]; then
+    CMD="python3 /app/video_library_cleaner.py '$VIDEO_DIR' $ARGS"
 else
-    # 构建命令
-    if [ "$DRY_RUN" = true ]; then
-        CMD="python3 /app/video_library_cleaner.py '$VIDEO_DIR' --dry-run"
-    else
-        CMD="python3 /app/video_library_cleaner.py '$VIDEO_DIR'"
-    fi
+    CMD="python3 /app/video_library_cleaner.py '$VIDEO_DIR'"
 fi
 
 # 显示模式信息

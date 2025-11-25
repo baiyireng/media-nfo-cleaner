@@ -34,11 +34,21 @@ quick-start.bat
 scripts\docker_deploy.bat "D:\Video"
 
 # 回收模式
-scripts\docker_deploy.bat "D:\Video" "D:\Recycle"
+scripts\docker_deploy.bat "D:\Video" --recycle "D:\Recycle"
+
+# 忽略目录
+scripts\docker_deploy.bat "D:\Video" --dry-run --ignore-dir "temp"
+
+# 限制目录大小
+scripts\docker_deploy.bat "D:\Video" --dry-run --max-size 1024
+
+# 组合选项
+scripts\docker_deploy.bat "D:\Video" --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-size 1024
 
 # 手动Docker启动
 docker run --rm -v "D:\Video":/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
 docker run --rm -v "D:\Video":/data/video -v "D:\Recycle":/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+docker run --rm -v "D:\Video":/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run --ignore-dir "temp" --max-size 1024
 ```
 
 ### 注意事项
@@ -84,11 +94,21 @@ chmod +x install/install_for_nas.sh
 ./scripts/docker_deploy.sh "/volume1/Video"
 
 # 回收模式
-./scripts/docker_deploy.sh "/volume1/Video" "/volume1/Recycle"
+./scripts/docker_deploy.sh "/volume1/Video" --recycle "/volume1/Recycle"
+
+# 忽略目录
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp"
+
+# 限制目录大小
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --max-size 1024
+
+# 组合选项
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-size 1024
 
 # 手动Docker启动
 docker run --rm -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
 docker run --rm -v /volume1/Video:/data/video -v /volume1/Recycle:/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+docker run --rm -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run --ignore-dir "temp" --max-size 1024
 ```
 
 ### 注意事项

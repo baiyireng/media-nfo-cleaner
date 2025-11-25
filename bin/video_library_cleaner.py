@@ -125,7 +125,7 @@ def setup_recycle_bin(recycle_dir):
             return False
     return True
 
-def move_to_recycle(source, recycle_dir, preserve_structure=True):
+def move_to_recycle(source, recycle_dir, preserve_structure=True, base_dir=None):
     """将文件或目录移动到回收站目录"""
     try:
         source_path = Path(source)
@@ -134,24 +134,47 @@ def move_to_recycle(source, recycle_dir, preserve_structure=True):
             
         recycle_path = Path(recycle_dir)
         
-        if preserve_structure:
+        # 检查回收目录是否在源目录内，如果是则不保持目录结构
+        recycle_in_source = False
+        if base_dir:
+            base_path = Path(base_dir)
+            try:
+                # 检查回收目录是否是源目录的子目录
+                recycle_in_source = recycle_path.is_relative_to(base_path) or recycle_path == base_path
+            except AttributeError:
+                # 对于旧版本Python，使用替代方法
+                try:
+                    recycle_rel = recycle_path.relative_to(base_path)
+                    recycle_in_source = len(str(recycle_rel).split(os.sep)) > 0
+                except ValueError:
+                    recycle_in_source = False
+        
+        if preserve_structure and not recycle_in_source:
             # 保持相对目录结构
             # 计算从根目录到源的相对路径
-            # 这里简单使用源路径的父目录名作为子目录
-            if source_path.is_file():
-                # 对于文件，放入以其父目录名命名的子目录中
-                sub_dir = recycle_path / source_path.parent.name
-                sub_dir.mkdir(exist_ok=True)
-                dest = sub_dir / source_path.name
+            if base_dir:
+                try:
+                    relative_path = source_path.relative_to(base_dir)
+                    # 在回收站中创建相同的目录结构
+                    dest_parent = recycle_path / relative_path.parent
+                    dest_parent.mkdir(parents=True, exist_ok=True)
+                    dest = dest_parent / source_path.name
+                except ValueError:
+                    # 如果无法计算相对路径，则使用父目录名
+                    sub_dir = recycle_path / source_path.parent.name
+                    sub_dir.mkdir(exist_ok=True)
+                    dest = sub_dir / source_path.name
             else:
-                # 对于目录，直接在回收站中创建同名目录
-                dest = recycle_path / source_path.name
+                # 如果没有提供基础目录，则使用源路径的父目录名作为子目录
+                if source_path.is_file():
+                    sub_dir = recycle_path / source_path.parent.name
+                    sub_dir.mkdir(exist_ok=True)
+                    dest = sub_dir / source_path.name
+                else:
+                    dest = recycle_path / source_path.name
         else:
-            # 不保持结构，所有内容放在回收站根目录
-            if source_path.is_file():
-                dest = recycle_path / source_path.name
-            else:
-                dest = recycle_path / source_path.name
+            # 回收目录在源目录内或不保持结构，所有内容放在回收站根目录
+            dest = recycle_path / source_path.name
         
         # 处理文件名冲突
         counter = 1
@@ -232,9 +255,63 @@ def process_root_nfo_files(root_dir, dry_run=False, recycle_dir=None):
                     except Exception as e:
                         print(f"    删除文件失败: {e}")
 
-def process_directory(directory, dry_run=False, recycle_dir=None):
+def should_ignore_directory(dir_path, ignore_dirs, base_dir):
+    """检查目录是否应该被忽略"""
+    if not ignore_dirs:
+        return False
+    
+    dir_path = Path(dir_path)
+    
+    for ignore_dir in ignore_dirs:
+        ignore_path = Path(ignore_dir)
+        
+        # 如果忽略路径是绝对路径，直接比较
+        if ignore_path.is_absolute():
+            if dir_path.is_relative_to(ignore_path):
+                return True
+        else:
+            # 如果忽略路径是相对路径，相对于base_dir进行比较
+            if base_dir:
+                full_ignore_path = Path(base_dir) / ignore_path
+                if dir_path.is_relative_to(full_ignore_path):
+                    return True
+            
+            # 或者比较目录名
+            if dir_path.name == ignore_path.name:
+                return True
+    
+    return False
+
+def get_directory_size(dir_path, max_size_mb):
+    """计算目录大小，如果超过max_size_mb则返回False"""
+    if max_size_mb <= 0:
+        return True  # 大小为0或负数表示不限制
+    
+    total_size = 0
+    max_size_bytes = max_size_mb * 1024 * 1024
+    
+    try:
+        for file_path in dir_path.rglob('*'):
+            if file_path.is_file():
+                total_size += file_path.stat().st_size
+                if total_size > max_size_bytes:
+                    return False
+        return True
+    except Exception as e:
+        print(f"计算目录大小时出错: {e}")
+        return True  # 出错时默认允许处理
+
+def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=None, max_file_size_mb=0):
     """处理指定目录"""
     print(f"\n处理目录: {directory}")
+    
+    # 处理忽略目录
+    if ignore_dirs:
+        print(f"忽略目录: {', '.join(ignore_dirs)}")
+    
+    # 处理文件大小限制
+    if max_file_size_mb > 0:
+        print(f"文件大小限制: {max_file_size_mb}MB")
     
     # 首先处理根目录下的NFO文件
     process_root_nfo_files(directory, dry_run, recycle_dir)
@@ -268,6 +345,16 @@ def process_directory(directory, dry_run=False, recycle_dir=None):
         # 跳过回收站目录
         if recycle_path and dir_path.is_relative_to(recycle_path):
             print(f"  跳过回收站目录: {dir_path}")
+            continue
+        
+        # 检查是否在忽略目录列表中
+        if should_ignore_directory(dir_path, ignore_dirs, directory):
+            print(f"  在忽略列表中，跳过目录: {dir_path}")
+            continue
+        
+        # 检查目录大小限制
+        if not get_directory_size(dir_path, max_file_size_mb):
+            print(f"  目录大小超过限制 ({max_file_size_mb}MB)，跳过: {dir_path}")
             continue
         
         # 查找该目录下的所有文件
@@ -311,8 +398,8 @@ def process_directory(directory, dry_run=False, recycle_dir=None):
                         print(f"    [DRY RUN] 将删除目录及其内容")
                 else:
                     if recycle_dir:
-                        # 移动到回收站
-                        if move_to_recycle(dir_path, recycle_dir):
+                        # 移动到回收站，传递基础目录以处理回收目录在源目录内的情况
+                        if move_to_recycle(dir_path, recycle_dir, True, directory):
                             print(f"    已移动目录到回收站")
                         else:
                             print(f"    移动目录失败")
@@ -325,12 +412,16 @@ def process_directory(directory, dry_run=False, recycle_dir=None):
                             print(f"    删除目录失败: {e}")
 
 def main():
-    parser = argparse.ArgumentParser(description='DXP4800 NAS视频库清理工具')
+    parser = argparse.ArgumentParser(description='视频库清理工具')
     parser.add_argument('directory', help='要清理的视频库目录路径')
     parser.add_argument('--dry-run', action='store_true', 
                        help='预览模式，只显示将要删除的目录而不实际删除')
     parser.add_argument('--recycle', type=str, metavar='RECYCLE_DIR',
                        help='回收模式：将删除的内容移动到指定目录而非永久删除')
+    parser.add_argument('--ignore-dir', action='append', dest='ignore_dirs', metavar='DIR',
+                       help='指定要忽略的目录，可多次使用。支持相对路径和绝对路径')
+    parser.add_argument('--max-size', type=int, dest='max_size_mb', default=0, metavar='SIZE_MB',
+                       help='限制处理的目录最大大小(MB)，0或负数表示不限制(默认)')
     
     args = parser.parse_args()
     
@@ -353,7 +444,7 @@ def main():
             print(f"错误: 无法创建回收站目录 {recycle_dir}")
             sys.exit(1)
     
-    print(f"DXP4800 NAS视频库清理工具")
+    print(f"视频库清理工具")
     print(f"目标目录: {args.directory}")
     
     if args.dry_run:
@@ -364,7 +455,7 @@ def main():
         print(f"运行模式: 直接删除模式")
     
     try:
-        process_directory(args.directory, args.dry_run, recycle_dir)
+        process_directory(args.directory, args.dry_run, recycle_dir, args.ignore_dirs, args.max_size_mb)
         print("\n清理完成!")
     except KeyboardInterrupt:
         print("\n操作被用户中断")

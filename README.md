@@ -12,6 +12,8 @@
 - 🗂️ **目录处理**：处理根目录和子目录中的残留文件
 - 🛡️ **安全预览**：支持预览模式，安全检查待删除内容
 - ♻️ **回收模式**：将删除内容移动到指定目录，避免永久丢失
+- 🚫 **目录忽略**：支持忽略特定目录，保护重要文件
+- 📏 **大小限制**：支持按目录大小限制处理范围
 - 🖥️ **跨平台**：支持Windows、Linux、macOS和NAS系统
 - 🐳 **Docker支持**：提供Docker容器化部署
 - 🚀 **一键安装**：支持远程一键安装脚本
@@ -45,7 +47,16 @@ chmod +x scripts/docker_deploy.sh
 ./scripts/docker_deploy.sh "/volume1/Video"
 
 # 回收模式
-./scripts/docker_deploy.sh "/volume1/Video" "/volume1/Recycle"
+./scripts/docker_deploy.sh "/volume1/Video" --recycle "/volume1/Recycle"
+
+# 忽略目录
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp" --ignore-dir "sample"
+
+# 限制目录大小
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --max-size 1024
+
+# 组合选项
+./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp" --max-size 1024
 ```
 
 ### 远程一键安装（推荐）
