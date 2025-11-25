@@ -28,6 +28,19 @@ scripts\run_video_cleaner.bat "D:\Video"
 quick-start.bat
 ```
 
+### Docker 启动
+```cmd
+# 一键Docker部署
+scripts\docker_deploy.bat "D:\Video"
+
+# 回收模式
+scripts\docker_deploy.bat "D:\Video" "D:\Recycle"
+
+# 手动Docker启动
+docker run --rm -v "D:\Video":/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
+docker run --rm -v "D:\Video":/data/video -v "D:\Recycle":/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+```
+
 ### 注意事项
 - 路径使用反斜杠 `\`
 - 空格路径需要双引号
@@ -65,11 +78,25 @@ chmod +x install/install_for_nas.sh
 ./quick-cleaner
 ```
 
+### Docker 启动
+```bash
+# 一键Docker部署
+./scripts/docker_deploy.sh "/volume1/Video"
+
+# 回收模式
+./scripts/docker_deploy.sh "/volume1/Video" "/volume1/Recycle"
+
+# 手动Docker启动
+docker run --rm -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
+docker run --rm -v /volume1/Video:/data/video -v /volume1/Recycle:/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+```
+
 ### 注意事项
 - 路径使用正斜杠 `/`
 - 需要Python3环境
 - 确保脚本有执行权限
 - 可能需要sudo权限
+- Docker中路径映射需要使用绝对路径
 
 ---
 
@@ -96,14 +123,28 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/baiyireng/media-nfo-clea
 ./scripts/recycle_video_cleaner.sh "/Users/username/Movies" "/Users/username/Movies/Recycle"
 ```
 
+### Docker 启动
+```bash
+# 一键Docker部署
+./scripts/docker_deploy.sh "/Users/username/Movies"
+
+# 回收模式
+./scripts/docker_deploy.sh "/Users/username/Movies" "/Users/username/Movies/Recycle"
+
+# 手动Docker启动
+docker run --rm -v /Users/username/Movies:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
+docker run --rm -v /Users/username/Movies:/data/video -v /Users/username/Movies/Recycle:/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+```
+
 ### 注意事项
 - 路径使用正斜杠 `/`
 - 可能需要安装Python3
 - 文件权限可能需要调整
+- Docker中路径映射需要使用绝对路径
 
 ---
 
-## Docker
+## Docker 通用
 
 ### 安装
 ```bash
