@@ -13,7 +13,8 @@
 - 🛡️ **安全预览**：支持预览模式，安全检查待删除内容
 - ♻️ **回收模式**：将删除内容移动到指定目录，避免永久丢失
 - 🚫 **目录忽略**：支持忽略特定目录，保护重要文件
-- 📏 **大小限制**：支持按目录大小限制处理范围
+- 📏 **大小限制**：支持按目录和文件大小限制处理范围
+- 📁 **归档模式**：支持将空目录归档到指定位置
 - 🖥️ **跨平台**：支持Windows、Linux、macOS和NAS系统
 - 🐳 **Docker支持**：提供Docker容器化部署
 - 🚀 **一键安装**：支持远程一键安装脚本
@@ -58,8 +59,14 @@ chmod +x scripts/docker_deploy.sh
 # 限制文件大小
 ./scripts/docker_deploy.sh "/volume1/Video" --dry-run --max-file-size "10MB"
 
+# 归档模式
+./scripts/docker_deploy.sh "/volume1/Video" --archive "/volume1/Archive"
+
 # 组合选项
 ./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-dir-size "1GB" --max-file-size "10MB"
+
+# 归档模式组合选项
+./scripts/docker_deploy.sh "/volume1/Video" --archive "/volume1/Archive" --ignore-dir "temp" --max-dir-size "1GB"
 ```
 
 ### 远程一键安装（推荐）
@@ -337,6 +344,9 @@ media-nfo-cleaner/
 - [基本使用指南](docs/README_video_cleaner.md)
 - [NAS设置指南](docs/README_NAS_Setup.md)
 - [多平台支持](docs/README_MultiPlatform.md)
+- [Docker部署指南](docs/DOCKER.md)
+- [Docker归档模式说明](docs/DOCKER_ARCHIVE.md)
+- [Docker离线部署指南](docs/DOCKER_OFFLINE.md)
 - [Windows安装指南](WINDOWS_INSTALL.md)
 
 ## 贡献

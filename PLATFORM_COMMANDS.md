@@ -45,12 +45,19 @@ scripts\docker_deploy.bat "D:\Video" --dry-run --max-dir-size "1GB"
 # 限制文件大小
 scripts\docker_deploy.bat "D:\Video" --dry-run --max-file-size "10MB"
 
+# 归档模式
+scripts\docker_deploy.bat "D:\Video" --archive "D:\Archive"
+
 # 组合选项
 scripts\docker_deploy.bat "D:\Video" --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-dir-size "1GB" --max-file-size "10MB"
+
+# 归档模式组合选项
+scripts\docker_deploy.bat "D:\Video" --archive "D:\Archive" --ignore-dir "temp" --max-dir-size "1GB"
 
 # 手动Docker启动
 docker run --rm -v "D:\Video":/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
 docker run --rm -v "D:\Video":/data/video -v "D:\Recycle":/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+docker run --rm -v "D:\Video":/data/video -v "D:\Archive":/data/archive baiyiren/media-nfo-cleaner:latest /data/video --archive /data/archive
 docker run --rm -v "D:\Video":/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run --ignore-dir "temp" --max-dir-size "1GB"
 ```
 
@@ -108,12 +115,19 @@ chmod +x install/install_for_nas.sh
 # 限制文件大小
 ./scripts/docker_deploy.sh "/volume1/Video" --dry-run --max-file-size "10MB"
 
+# 归档模式
+./scripts/docker_deploy.sh "/volume1/Video" --archive "/volume1/Archive"
+
 # 组合选项
 ./scripts/docker_deploy.sh "/volume1/Video" --dry-run --ignore-dir "temp" --ignore-dir "sample" --max-dir-size "1GB" --max-file-size "10MB"
+
+# 归档模式组合选项
+./scripts/docker_deploy.sh "/volume1/Video" --archive "/volume1/Archive" --ignore-dir "temp" --max-dir-size "1GB"
 
 # 手动Docker启动
 docker run --rm -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run
 docker run --rm -v /volume1/Video:/data/video -v /volume1/Recycle:/data/recycle baiyiren/media-nfo-cleaner:latest /data/video --recycle /data/recycle
+docker run --rm -v /volume1/Video:/data/video -v /volume1/Archive:/data/archive baiyiren/media-nfo-cleaner:latest /data/video --archive /data/archive
 docker run --rm -v /volume1/Video:/data/video baiyiren/media-nfo-cleaner:latest /data/video --dry-run --ignore-dir "temp" --max-dir-size "1GB"
 ```
 

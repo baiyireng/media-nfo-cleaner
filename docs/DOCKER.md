@@ -138,7 +138,18 @@ docker run --rm \
   /data/video --dry-run --max-file-size "100KB"
 ```
 
-#### 组合选项
+#### 归档模式
+
+```bash
+# 归档空目录
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  -v /path/to/archive/directory:/data/archive \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --archive /data/archive
+```
+
+### 组合选项
 
 ```bash
 # 预览模式，忽略特定目录，并限制目录和文件大小
@@ -153,6 +164,13 @@ docker run --rm \
   -v /path/to/recycle/directory:/data/recycle \
   baiyiren/media-nfo-cleaner:latest \
   /data/video --recycle /data/recycle --ignore-dir "temp" --max-dir-size "2GB" --max-file-size "5MB"
+
+# 归档模式，忽略特定目录，并限制目录大小
+docker run --rm \
+  -v /path/to/your/video/library:/data/video \
+  -v /path/to/archive/directory:/data/archive \
+  baiyiren/media-nfo-cleaner:latest \
+  /data/video --archive /data/archive --ignore-dir "temp" --max-dir-size "1GB"
 ```
 
 ### 大小单位说明

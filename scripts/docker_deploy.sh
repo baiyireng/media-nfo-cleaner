@@ -9,8 +9,8 @@ if [ -z "$1" ]; then
     echo "错误: 请指定视频库路径"
     echo "使用方法: $0 \"/path/to/video/library\" [选项]"
     echo "示例: $0 \"/volume1/Video\" --recycle \"/volume1/Recycle\""
+    echo "      $0 \"/volume1/Video\" --archive \"/volume1/Archive\""
     echo "      $0 \"/volume1/Video\" --dry-run --ignore-dir \"temp\" --max-dir-size \"1GB\""
-    echo "      $0 \"/volume1/Video\" --dry-run --max-file-size \"10MB\""
     exit 1
 fi
 
@@ -22,6 +22,7 @@ CONTAINER_NAME="media-nfo-cleaner"
 # Docker容器内路径
 DOCKER_VIDEO_PATH="/data/video"
 DOCKER_RECYCLE_PATH="/data/recycle"
+DOCKER_ARCHIVE_PATH="/data/archive"
 
 # 显示配置信息
 echo ""
@@ -50,7 +51,9 @@ ARGS=""
 shift  # 跳过第一个参数（视频路径）
 
 RECYCLE_PATH=""
+ARCHIVE_PATH=""
 FOUND_RECYCLE=false
+FOUND_ARCHIVE=false
 
 # 解析命令行参数
 while [ $# -gt 0 ]; do
@@ -66,6 +69,19 @@ while [ $# -gt 0 ]; do
             RECYCLE_PATH="$1"
             # 添加回收目录挂载
             RUN_CMD="$RUN_CMD -v \"$RECYCLE_PATH:$DOCKER_RECYCLE_PATH\""
+            shift
+            ;;
+        --archive)
+            FOUND_ARCHIVE=true
+            ARGS="$ARGS --archive $DOCKER_ARCHIVE_PATH"
+            shift
+            if [ -z "$1" ]; then
+                echo "错误: --archive 需要指定归档目录路径"
+                exit 1
+            fi
+            ARCHIVE_PATH="$1"
+            # 添加归档目录挂载
+            RUN_CMD="$RUN_CMD -v \"$ARCHIVE_PATH:$DOCKER_ARCHIVE_PATH\""
             shift
             ;;
         *)

@@ -373,13 +373,75 @@ def check_file_size(file_path, max_file_size_bytes):
         print(f"检查文件大小时出错: {e}")
         return True  # 出错时默认允许处理
 
-def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=None, max_dir_size="0", max_file_size="0"):
+def archive_directory(dir_path, archive_dir, base_dir=None):
+    """归档目录"""
+    try:
+        source_path = Path(dir_path)
+        if not source_path.exists():
+            return False
+            
+        archive_path = Path(archive_dir)
+        
+        # 检查归档目录是否在源目录内
+        archive_in_source = False
+        if base_dir:
+            base_path = Path(base_dir)
+            try:
+                archive_in_source = archive_path.is_relative_to(base_path) or archive_path == base_path
+            except AttributeError:
+                try:
+                    archive_rel = archive_path.relative_to(base_path)
+                    archive_in_source = len(str(archive_rel).split(os.sep)) > 0
+                except ValueError:
+                    archive_in_source = False
+        
+        # 创建归档目录结构
+        if base_dir and not archive_in_source:
+            try:
+                relative_path = source_path.relative_to(base_dir)
+                # 在归档目录中创建相同的目录结构
+                dest_parent = archive_path / relative_path.parent
+                dest_parent.mkdir(parents=True, exist_ok=True)
+                dest = dest_parent / source_path.name
+            except ValueError:
+                # 如果无法计算相对路径，则使用父目录名
+                sub_dir = archive_path / source_path.parent.name
+                sub_dir.mkdir(exist_ok=True)
+                dest = sub_dir / source_path.name
+        else:
+            # 归档目录在源目录内或不保持结构
+            dest = archive_path / source_path.name
+        
+        # 处理文件名冲突
+        counter = 1
+        original_dest = dest
+        while dest.exists():
+            if dest.is_file():
+                stem = original_dest.stem
+                suffix = original_dest.suffix
+                dest = original_dest.parent / f"{stem}_{counter}{suffix}"
+            else:
+                dest = original_dest.parent / f"{original_dest.name}_{counter}"
+            counter += 1
+        
+        # 移动目录到归档位置
+        shutil.move(str(source_path), str(dest))
+        return True
+    except Exception as e:
+        print(f"归档目录失败: {e}")
+        return False
+
+def process_directory(directory, dry_run=False, recycle_dir=None, archive_dir=None, ignore_dirs=None, max_dir_size="0", max_file_size="0"):
     """处理指定目录"""
     print(f"\n处理目录: {directory}")
     
     # 处理忽略目录
     if ignore_dirs:
         print(f"忽略目录: {', '.join(ignore_dirs)}")
+    
+    # 处理归档选项
+    if archive_dir:
+        print(f"归档目录: {archive_dir}")
     
     # 解析大小限制
     try:
@@ -397,39 +459,44 @@ def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=No
     if max_file_size_bytes > 0:
         print(f"文件大小限制: {format_size(max_file_size_bytes)}")
     
+    # 设置归档目录
+    archive_path = None
+    if archive_dir:
+        archive_path = Path(archive_dir)
+        # 如果归档目录是相对路径，则相对于目标目录
+        if not archive_path.is_absolute():
+            archive_path = Path(directory) / archive_path
+        
+        # 创建归档目录
+        if not archive_path.exists():
+            try:
+                archive_path.mkdir(parents=True, exist_ok=True)
+                print(f"创建归档目录: {archive_path}")
+            except Exception as e:
+                print(f"创建归档目录失败: {e}")
+                archive_path = None
+    
     # 首先处理根目录下的NFO文件
     process_root_nfo_files(directory, dry_run, recycle_dir, max_file_size_bytes)
     
-    # 查找所有子目录中的NFO文件
-    nfo_files = list(Path(directory).glob('**/*.nfo'))
+    # 获取所有子目录
+    all_subdirs = [d for d in Path(directory).iterdir() if d.is_dir() and d.name != 'recycle']
     
-    # 过滤掉根目录的NFO文件和回收站目录中的NFO文件
-    root_path = Path(directory).resolve()
+    # 过滤掉回收站目录和归档目录
     recycle_path = Path(recycle_dir).resolve() if recycle_dir else None
+    if recycle_path:
+        all_subdirs = [d for d in all_subdirs if not d.resolve().is_relative_to(recycle_path)]
     
-    nfo_files = [f for f in nfo_files 
-                if f.parent != root_path 
-                and (not recycle_path or not f.is_relative_to(recycle_path))]
+    if archive_path:
+        all_subdirs = [d for d in all_subdirs if not d.resolve().is_relative_to(archive_path)]
     
-    if not nfo_files:
-        print("未找到子目录中的NFO文件")
+    if not all_subdirs:
+        print("未找到子目录")
         return
     
-    directories_to_check = set()
-    
-    # 收集所有包含NFO文件的目录
-    for nfo_file in nfo_files:
-        parent_dir = nfo_file.parent
-        directories_to_check.add(parent_dir)
-    
     # 检查每个目录
-    for dir_path in directories_to_check:
+    for dir_path in all_subdirs:
         print(f"\n检查目录: {dir_path}")
-        
-        # 跳过回收站目录
-        if recycle_path and dir_path.is_relative_to(recycle_path):
-            print(f"  跳过回收站目录: {dir_path}")
-            continue
         
         # 检查是否在忽略目录列表中
         if should_ignore_directory(dir_path, ignore_dirs, directory):
@@ -452,7 +519,7 @@ def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=No
             print(f"  发现视频文件，跳过此目录: {[f.name for f in video_files]}")
             continue
         
-        # 如果没有视频文件但有NFO文件，进一步检查
+        # 处理有NFO文件或其他残留文件的目录
         if nfo_files_in_dir or other_files:
             files_to_process = []
             
@@ -495,7 +562,7 @@ def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=No
                             print(f"    [DRY RUN] 将删除目录及其内容")
                     else:
                         if recycle_dir:
-                            # 移动到回收站，传递基础目录以处理回收目录在源目录内的情况
+                            # 移动到回收站
                             if move_to_recycle(dir_path, recycle_dir, True, directory):
                                 print(f"    已移动目录到回收站")
                             else:
@@ -507,6 +574,18 @@ def process_directory(directory, dry_run=False, recycle_dir=None, ignore_dirs=No
                                 print(f"    已删除目录及其内容")
                             except Exception as e:
                                 print(f"    删除目录失败: {e}")
+        
+        # 处理既没有视频文件也没有残留文件的空目录（仅当启用归档时）
+        elif not video_files and not nfo_files_in_dir and not other_files and archive_path:
+            print(f"  目录为空，将归档: {dir_path}")
+            
+            if dry_run:
+                print(f"    [DRY RUN] 将归档目录")
+            else:
+                if archive_directory(dir_path, archive_path, directory):
+                    print(f"    已归档目录")
+                else:
+                    print(f"    归档目录失败")
 
 def main():
     parser = argparse.ArgumentParser(description='视频库清理工具')
@@ -515,6 +594,8 @@ def main():
                        help='预览模式，只显示将要删除的目录而不实际删除')
     parser.add_argument('--recycle', type=str, metavar='RECYCLE_DIR',
                        help='回收模式：将删除的内容移动到指定目录而非永久删除')
+    parser.add_argument('--archive', type=str, metavar='ARCHIVE_DIR',
+                       help='归档模式：将既无视频文件也无残留文件的目录移动到指定目录')
     parser.add_argument('--ignore-dir', action='append', dest='ignore_dirs', metavar='DIR',
                        help='指定要忽略的目录，可多次使用。支持相对路径和绝对路径')
     parser.add_argument('--max-dir-size', type=str, dest='max_dir_size', default='0', metavar='SIZE',
@@ -543,18 +624,30 @@ def main():
             print(f"错误: 无法创建回收站目录 {recycle_dir}")
             sys.exit(1)
     
+    # 处理归档目录
+    archive_dir = None
+    if args.archive:
+        archive_dir = args.archive
+        
+        # 如果归档目录是相对路径，则相对于目标目录
+        if not os.path.isabs(archive_dir):
+            archive_dir = os.path.join(args.directory, archive_dir)
+    
     print(f"视频库清理工具")
     print(f"目标目录: {args.directory}")
     
     if args.dry_run:
-        print(f"运行模式: 预览 (不会实际删除文件)")
+        print(f"运行模式: 预览 (不会实际删除或移动文件)")
     elif args.recycle:
         print(f"运行模式: 回收模式 (文件将被移动到: {recycle_dir})")
     else:
         print(f"运行模式: 直接删除模式")
     
+    if args.archive:
+        print(f"归档模式: 空目录将被移动到: {archive_dir}")
+    
     try:
-        process_directory(args.directory, args.dry_run, recycle_dir, args.ignore_dirs, args.max_dir_size, args.max_file_size)
+        process_directory(args.directory, args.dry_run, recycle_dir, archive_dir, args.ignore_dirs, args.max_dir_size, args.max_file_size)
         print("\n清理完成!")
     except KeyboardInterrupt:
         print("\n操作被用户中断")

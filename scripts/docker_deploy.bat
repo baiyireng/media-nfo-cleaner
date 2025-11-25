@@ -8,8 +8,8 @@ if "%~1"=="" (
     echo 错误: 请指定视频库路径
     echo 使用方法: %0 "视频库路径" [选项]
     echo 示例: %0 "D:\Video" --recycle "D:\Recycle"
+    echo       %0 "D:\Video" --archive "D:\Archive"
     echo       %0 "D:\Video" --dry-run --ignore-dir "temp" --max-dir-size "1GB"
-    echo       %0 "D:\Video" --dry-run --max-file-size "10MB"
     exit /b 1
 )
 
@@ -21,6 +21,7 @@ set CONTAINER_NAME=media-nfo-cleaner
 :: 转换Windows路径为Docker兼容路径
 set DOCKER_VIDEO_PATH=/data/video
 set DOCKER_RECYCLE_PATH=/data/recycle
+set DOCKER_ARCHIVE_PATH=/data/archive
 
 :: 显示配置信息
 echo.
@@ -60,6 +61,16 @@ if "%~2"=="" goto CONTINUE
         )
         set RECYCLE_PATH=%~2
         set "RUN_CMD=%RUN_CMD% -v "%RECYCLE_PATH%:%DOCKER_RECYCLE_PATH%""
+    ) else if "%~2"=="--archive" (
+        set "ARGS=%ARGS% --archive %DOCKER_ARCHIVE_PATH%"
+        :: 添加归档目录挂载
+        shift
+        if "%~2"=="" (
+            echo 错误: --archive 需要指定归档目录路径
+            exit /b 1
+        )
+        set ARCHIVE_PATH=%~2
+        set "RUN_CMD=%RUN_CMD% -v "%ARCHIVE_PATH%:%DOCKER_ARCHIVE_PATH%""
     ) else (
         :: 其他参数直接传递
         set "ARGS=%ARGS% %~2"
